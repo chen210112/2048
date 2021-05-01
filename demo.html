@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>2048</title>
+  <meta name="keywords" content="">
+  <meta name="description" content=""> 
+  <style>
+    body {
+      margin: 0;
+      font-size: 32px;
+      background-color: rgb(238, 238, 238);
+      min-width: 1200px;
+    }
+    .top {
+      padding: 50px;
+      text-align: center;
+    }
+    .tab {
+      margin: 10px auto;
+      border-radius: 10px;
+      text-align: center;
+      font-weight: bold;
+      background-color: #bbada0;
+    }
+    td {
+      width: 100px;
+      height: 100px;
+    }
+    .restart {
+      display: inline-block;
+      width: 177px;
+      height: 55px;
+      margin-right: 30px;
+      border-radius: 3px;
+      background-color: #8f7a66;
+      line-height: 55px;
+      font-size: 22px;
+      color: #fff;
+      font-weight: bold;
+      text-align: center;
+      cursor: pointer;
+    }
+    .score {
+      display: inline-block;
+      width: 120px;
+      color: #000;
+    }
+    .overDiv {
+      position: absolute;
+      left: 50%;
+      top: 300px;
+      transform: translateX(-50%);
+    }
+    .over {
+      color: #776e64;
+      /* text-align: center; */
+      
+    }
+    .again {
+      width: 100px;
+      height: 40px;
+      margin: 0 auto;
+      background-color: #8f7965;
+      border-radius: 5px;
+      line-height: 40px;
+      font-size: 14px;
+      font-weight: 700;
+      color: #fff;
+      text-align: center;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="top">
+    <div class="restart">重新开始</div>
+    <span class="score">0</span>分 
+  </div>
+  <table class="tab" cellspacing="10"></table>
+  
+  <script>
+    var json = {
+      k: 0,
+      add: false,
+      init: function() {
+        var oScore = document.querySelector('.score');
+        oScore.firstChild.nodeValue = '0';
+        var oTab = document.querySelector('.tab'),
+            str = '',
+            id = 1;
+        for(let i = 1; i <= 4; i++) {
+          str += '<tr>';
+            for(let j = 1; j <= 4; j++) {
+              str += '<td id="' + id++ + '"></td>';
+            }
+          str += '</tr>';
+        }
+        oTab.innerHTML = str;
+        this.randomNum();
+        this.randomNum();
+        this.result();
+      },
+      top: function() {
+        this.k = 0;
+        for(let i = 1; i <= 4; i++) {
+          for(let j = i + 4; j <= i + 12; j += 4) {
+            for(let k = j; k >= i + 4; k -= 4) {
+              this.change(document.getElementById(k - 4), document.getElementById(k), k, 'top');
+            }
+          }
+          this.k = 0;
+        }
+      },
+      bottom: function() {
+        this.k = 99;
+        for(let i = 13; i <= 16; i++) {
+          for(let j = i - 4; j >= i - 12; j -= 4) {
+            for(let k = j; k <= i - 4 ; k += 4) {
+              this.change(document.getElementById(k + 4), document.getElementById(k), k, 'bottom');
+            }
+          }
+          this.k = 99;
+        }
+      },
+      left: function() {
+        this.k = 0;
+        for(let i = 1; i <= 13; i += 4) {
+          for(let j = i + 1; j <= i+3; j++) {
+            for(let k = j; k >= i + 1; k--) {
+              this.change(document.getElementById(k - 1), document.getElementById(k), k, 'left');
+            }
+          }
+          this.k = 0;
+        }
+      },
+      right: function() {
+        this.k = 99;
+        for(let i = 1; i <= 13; i += 4) {
+          for(let j = i + 3; j >= i ; j--) {
+            for(let k = j; k < i + 3; k++) {
+              this.change(document.getElementById(k + 1), document.getElementById(k), k, 'right');
+            }
+          }
+          this.k = 99;
+        }
+      },
+      addScore: function(double) {
+        var oScore = document.querySelector('.score');
+        oScore.innerHTML = oScore.innerHTML * 1 + double;
+      },
+      double(b, a, k) {
+        b.innerHTML *= 2;
+        a.innerHTML = '';
+        this.k = k;
+        this.add = true;
+
+        // 加分
+        this.addScore(b.innerHTML * 1);
+      },
+      change(before, after, k, to) {
+        // 移动
+        if(before.innerHTML == '' && after.innerHTML != '') {
+          before.innerHTML = after.innerHTML;
+          after.innerHTML = '';
+          this.add = true;
+        }
+        // 合并
+        if(before.innerHTML != '' && before.innerHTML == after.innerHTML) {
+          switch(to) {
+            case 'top':
+            case 'left':
+              if (k > this.k) {
+                this.double(before, after, k);
+              }
+              break;
+            case 'bottom':
+            case 'right':
+              if (k < this.k) {
+                this.double(before, after, k);
+              }
+              break;
+            
+          }
+        }
+      },
+      myRandom: function(min, max) {
+        return Math.round(Math.random() * (max - min) + min);
+      },
+      // 随机在格子上生成一个数字
+      randomNum: function() {
+        var num = this.myRandom(1, 16);
+        var oGrid = document.getElementById(num);
+        if(oGrid.innerHTML == '') {
+          oGrid.innerHTML = this.myRandom(1, 2) * 2;
+        } else {
+          this.randomNum();
+        }
+        
+      },
+      // 改变颜色
+      result: function() {
+        var color = {
+          '': '#cdc1b4',
+          '2': '#eee4da',
+          '4': '#ede0c8',
+          '8': '#f2b179',
+          '16': '#f59563',
+          '32': '#f67c5f',
+          '64': '#f65e3b',
+          '128': '#edcf72',
+          '256': '#edcc61',
+          '512': '#ff0099',
+          '1024': '#990033',
+          '2048': '#6600ff',
+          '4096': '#cc0066'
+        };
+        var oGrid = null;
+        for(let i =1 ; i <= 16; i++) {
+          oGrid = document.getElementById(i);
+          oGrid.style.backgroundColor = color[oGrid.innerHTML]; 
+        }
+      },
+      // 结束游戏
+      over: function() {
+        var oGrid = null;
+        for(let i =1 ; i <= 16; i++) {
+          oGrid = document.getElementById(i);
+          if (oGrid.innerHTML == '') {
+            return false;
+          }
+        }
+        return true;
+      }
+    }
+
+    function showOver() {
+      var oDiv = document.createElement('div');
+      oDiv.className = 'overDiv';
+
+      document.body.appendChild(oDiv);
+      
+      oDiv.innerHTML = '<h2 class="over">Game over!</h2>' +
+      '<div class="again">Try again</div>';
+
+      document.querySelector('.again').onclick = function() {
+        document.body.removeChild(oDiv);
+        oDiv = null;
+        json.init();
+        document.onkeydown = keyDown;
+      }
+    }
+
+    function keyDown() {
+        switch(event.keyCode) {
+          case 38: 
+            json.top();
+            break;
+          case 40: 
+            json.bottom();
+            break;
+          case 37:
+            json.left();
+            break;
+          case 39:
+            json.right();
+            break;
+        }
+
+        if(json.over()) {
+            document.onkeydown = null;
+            return showOver();
+        }
+        if (json.add) {
+          json.randomNum();
+          json.add = false;
+        }
+        json.result();
+        
+      }
+    // html文档加载完毕后的事件处理函数
+    window.onload = function() {
+      // json.init.bind(json);
+      json.init();
+
+      document.onkeydown = keyDown;
+
+      var oRes = document.querySelector('.restart');
+      oRes.onclick = function() {
+        json.init();
+      }
+    }    
+  </script>
+</body>
+</html>
