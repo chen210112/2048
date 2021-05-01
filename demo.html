@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>2048</title>
-  <meta name="keywords" content="">
-  <meta name="description" content=""> 
+  <meta name="keywords" content="2048">
+  <meta name="description" content="2048"> 
   <style>
     body {
       margin: 0;
@@ -56,8 +56,6 @@
     }
     .over {
       color: #776e64;
-      /* text-align: center; */
-      
     }
     .again {
       width: 100px;
@@ -80,7 +78,7 @@
     <span class="score">0</span>分 
   </div>
   <table class="tab" cellspacing="10"></table>
-  
+
   <script>
     var json = {
       k: 0,
@@ -156,7 +154,6 @@
         a.innerHTML = '';
         this.k = k;
         this.add = true;
-
         // 加分
         this.addScore(b.innerHTML * 1);
       },
@@ -254,32 +251,33 @@
     }
 
     function keyDown() {
-        switch(event.keyCode) {
-          case 38: 
-            json.top();
-            break;
-          case 40: 
-            json.bottom();
-            break;
-          case 37:
-            json.left();
-            break;
-          case 39:
-            json.right();
-            break;
-        }
-
-        if(json.over()) {
-            document.onkeydown = null;
-            return showOver();
-        }
-        if (json.add) {
-          json.randomNum();
-          json.add = false;
-        }
-        json.result();
-        
+      switch(event.keyCode) {
+        case 38: 
+          json.top();
+          break;
+        case 40: 
+          json.bottom();
+          break;
+        case 37:
+          json.left();
+          break;
+        case 39:
+          json.right();
+          break;
       }
+
+      if(json.over()) {
+          document.onkeydown = null;
+          return showOver();
+      }
+      if (json.add) {
+        json.randomNum();
+        json.add = false;
+      }
+      json.result();
+        
+    }
+
     // html文档加载完毕后的事件处理函数
     window.onload = function() {
       // json.init.bind(json);
